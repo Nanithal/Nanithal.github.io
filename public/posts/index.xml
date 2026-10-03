@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Nanithal 的博客</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on Nanithal 的博客</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 04 Oct 2026 00:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hello World</title>
+      <link>http://localhost:1313/posts/hello-world/</link>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/posts/hello-world/</guid>
+      <description>&lt;h1 id=&#34;hello-world&#34;&gt;Hello World&lt;/h1&gt;
+&lt;p&gt;这是我的第一篇博客。&lt;/p&gt;
+&lt;p&gt;以后我会在这里记录我的学习和项目。&lt;/p&gt;
+&lt;h2 id=&#34;关于我&#34;&gt;关于我&lt;/h2&gt;
+&lt;p&gt;我叫Nanithal&lt;/p&gt;
+&lt;h2 id=&#34;为什么创建这个博客&#34;&gt;为什么创建这个博客？&lt;/h2&gt;
+&lt;p&gt;记录自己的学习过程，也记录一些项目和技术思考。&lt;/p&gt;
+&lt;p&gt;希望这里能够成为属于自己的技术知识库。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

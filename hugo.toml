@@ -1,0 +1,18 @@
+baseURL = 'https://Nanithal.github.io/'
+locale = 'zh-cn'
+timeZone = 'Asia/Shanghai'
+title = 'Nanithal 的博客'
+theme = 'PaperMod'
+
+[params]
+    env = 'production'
+    description = 'Nanithal 的个人技术博客'
+    author = 'Nanithal'
+    defaultTheme = 'auto'
+    ShowReadingTime = true
+    ShowShareButtons = true
+    ShowPostNavLinks = true
+    ShowCodeCopyButtons = true
+    ShowBreadCrumbs = true
+    ShowWordCount = true
+    ShowRssButtonInSectionTermList = true
