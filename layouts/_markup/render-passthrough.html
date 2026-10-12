@@ -1,0 +1,9 @@
+{{- $opts := dict "output" "htmlAndMathml" "displayMode" (eq .Type "block") }}
+{{- with try (transform.ToMath .Inner $opts) }}
+{{- with .Err }}
+<span style="color:red">公式渲染错误: {{.}}</span>
+{{- else }}
+{{- .Value }}
+{{- $.Page.Store.Set "hasMath" true }}
+{{- end }}
+{{- end -}}

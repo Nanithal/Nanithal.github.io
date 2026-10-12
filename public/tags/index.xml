@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Tags on Nanithal 的博客</title>
+    <title>标签 on Nanithal 的博客</title>
     <link>http://localhost:1313/tags/</link>
-    <description>Recent content in Tags on Nanithal 的博客</description>
+    <description>Recent content in 标签 on Nanithal 的博客</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
+    <lastBuildDate>Wed, 07 Oct 2026 00:00:00 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo</title>
+      <link>http://localhost:1313/tags/hugo/</link>
+      <pubDate>Wed, 07 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/hugo/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Markdown</title>
+      <link>http://localhost:1313/tags/markdown/</link>
+      <pubDate>Wed, 07 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/markdown/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mermaid</title>
+      <link>http://localhost:1313/tags/mermaid/</link>
+      <pubDate>Wed, 07 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/mermaid/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>代码</title>
+      <link>http://localhost:1313/tags/%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Wed, 07 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E4%BB%A3%E7%A0%81/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>LaTeX</title>
+      <link>http://localhost:1313/tags/latex/</link>
+      <pubDate>Tue, 06 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/latex/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>数学</title>
+      <link>http://localhost:1313/tags/%E6%95%B0%E5%AD%A6/</link>
+      <pubDate>Tue, 06 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%95%B0%E5%AD%A6/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GitHub Pages</title>
+      <link>http://localhost:1313/tags/github-pages/</link>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/github-pages/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>PaperMod</title>
+      <link>http://localhost:1313/tags/papermod/</link>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/tags/papermod/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>

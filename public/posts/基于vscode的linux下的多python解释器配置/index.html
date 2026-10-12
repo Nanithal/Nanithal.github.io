@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Nanithal 的博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="基于vscode的Linux下的多python解释器
+本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境。
+
+采用的是archlinux操作系统，不同发行版命令可能会有所不同。
+
+archlinux下的python解释
+在安装linux操作系统时候，会自动下载最新版本的python解释器。这个解释器为系统解释器，将被安装在/usr目录下。具体如下：
+/usr/bin/python3    可执行程序位置
+/usr/include/python3.x  源码/头文件位置
+/usr/lib/python3.x 安装的库位置
+/usr/lib/python3.x/site-packages    site-packages(系统全局包位置)
+
+同时，archlinux官方仓库中的python包一般指提供当前版本，不会提供
+python3.10
+python3.11
+python3.12
+类似于上述这种指定了版本的python解释器。
+那么安装额外的python解释器，便可以采用pyenv来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器
+系统 Python
+    │
+    └── /usr/bin/python
+
+额外 Python
+    │
+    ├── Python 3.10
+    ├── Python 3.11
+    ├── Python 3.12
+    └── Python 3.13
+pyenv的原理、安装与相关命令
+pyenv 是一个用于在 Linux、macOS 上管理多个 Python 版本的命令行工具。
+原理
+操作系统找命令的规则：按PATH从前往后依次搜索，找到第一个匹配的程序就执行。
+pyenv的核心套路：
+
+在PATH最前面插入 ~/.pyenv/shims 目录（shims = 垫片）
+敲击 python、pip、python3，shell 优先找到 shims 目录下同名脚本（起到了拦截的一个效果）
+shim 是轻量包装脚本，它调用 pyenv 程序，去查询当前应该使用哪个 Python 版本
+再转发调用到对应版本真实的 Python 可执行文件
+
+安装
+首先安装一些编译python所需要的依赖（没有则安装）
+sudo pacman -S --needed base-devel openssl zlib xz tk
+随后安装pyenv">
+<meta name="author" content="Nanithal">
+<link rel="canonical" href="http://localhost:1313/posts/%E5%9F%BA%E4%BA%8Evscode%E7%9A%84linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E5%9F%BA%E4%BA%8Evscode%E7%9A%84linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<meta property="og:url" content="http://localhost:1313/posts/%E5%9F%BA%E4%BA%8Evscode%E7%9A%84linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/">
+  <meta property="og:site_name" content="Nanithal 的博客">
+  <meta property="og:title" content="Nanithal 的博客">
+  <meta property="og:description" content="基于vscode的Linux下的多python解释器 本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境。
+采用的是archlinux操作系统，不同发行版命令可能会有所不同。
+archlinux下的python解释 在安装linux操作系统时候，会自动下载最新版本的python解释器。这个解释器为系统解释器，将被安装在/usr目录下。具体如下：
+/usr/bin/python3 可执行程序位置 /usr/include/python3.x 源码/头文件位置 /usr/lib/python3.x 安装的库位置 /usr/lib/python3.x/site-packages site-packages(系统全局包位置) 同时，archlinux官方仓库中的python包一般指提供当前版本，不会提供
+python3.10 python3.11 python3.12 类似于上述这种指定了版本的python解释器。 那么安装额外的python解释器，便可以采用pyenv来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器
+系统 Python │ └── /usr/bin/python 额外 Python │ ├── Python 3.10 ├── Python 3.11 ├── Python 3.12 └── Python 3.13 pyenv的原理、安装与相关命令 pyenv 是一个用于在 Linux、macOS 上管理多个 Python 版本的命令行工具。
+原理 操作系统找命令的规则：按PATH从前往后依次搜索，找到第一个匹配的程序就执行。
+pyenv的核心套路：
+在PATH最前面插入 ~/.pyenv/shims 目录（shims = 垫片） 敲击 python、pip、python3，shell 优先找到 shims 目录下同名脚本（起到了拦截的一个效果） shim 是轻量包装脚本，它调用 pyenv 程序，去查询当前应该使用哪个 Python 版本 再转发调用到对应版本真实的 Python 可执行文件 安装 首先安装一些编译python所需要的依赖（没有则安装）
+sudo pacman -S --needed base-devel openssl zlib xz tk 随后安装pyenv">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Nanithal 的博客">
+  <meta name="twitter:description" content="基于vscode的Linux下的多python解释器 本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境。
+采用的是archlinux操作系统，不同发行版命令可能会有所不同。
+archlinux下的python解释 在安装linux操作系统时候，会自动下载最新版本的python解释器。这个解释器为系统解释器，将被安装在/usr目录下。具体如下：
+/usr/bin/python3 可执行程序位置 /usr/include/python3.x 源码/头文件位置 /usr/lib/python3.x 安装的库位置 /usr/lib/python3.x/site-packages site-packages(系统全局包位置) 同时，archlinux官方仓库中的python包一般指提供当前版本，不会提供
+python3.10 python3.11 python3.12 类似于上述这种指定了版本的python解释器。 那么安装额外的python解释器，便可以采用pyenv来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器
+系统 Python │ └── /usr/bin/python 额外 Python │ ├── Python 3.10 ├── Python 3.11 ├── Python 3.12 └── Python 3.13 pyenv的原理、安装与相关命令 pyenv 是一个用于在 Linux、macOS 上管理多个 Python 版本的命令行工具。
+原理 操作系统找命令的规则：按PATH从前往后依次搜索，找到第一个匹配的程序就执行。
+pyenv的核心套路：
+在PATH最前面插入 ~/.pyenv/shims 目录（shims = 垫片） 敲击 python、pip、python3，shell 优先找到 shims 目录下同名脚本（起到了拦截的一个效果） shim 是轻量包装脚本，它调用 pyenv 程序，去查询当前应该使用哪个 Python 版本 再转发调用到对应版本真实的 Python 可执行文件 安装 首先安装一些编译python所需要的依赖（没有则安装）
+sudo pacman -S --needed base-devel openssl zlib xz tk 随后安装pyenv">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "文章",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "",
+      "item": "http://localhost:1313/posts/%E5%9F%BA%E4%BA%8Evscode%E7%9A%84linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "name": "",
+  "description": "基于vscode的Linux下的多python解释器 本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境。\n采用的是archlinux操作系统，不同发行版命令可能会有所不同。\narchlinux下的python解释 在安装linux操作系统时候，会自动下载最新版本的python解释器。这个解释器为系统解释器，将被安装在/usr目录下。具体如下：\n/usr/bin/python3 可执行程序位置 /usr/include/python3.x 源码/头文件位置 /usr/lib/python3.x 安装的库位置 /usr/lib/python3.x/site-packages site-packages(系统全局包位置) 同时，archlinux官方仓库中的python包一般指提供当前版本，不会提供\npython3.10 python3.11 python3.12 类似于上述这种指定了版本的python解释器。 那么安装额外的python解释器，便可以采用pyenv来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器\n系统 Python │ └── /usr/bin/python 额外 Python │ ├── Python 3.10 ├── Python 3.11 ├── Python 3.12 └── Python 3.13 pyenv的原理、安装与相关命令 pyenv 是一个用于在 Linux、macOS 上管理多个 Python 版本的命令行工具。\n原理 操作系统找命令的规则：按PATH从前往后依次搜索，找到第一个匹配的程序就执行。\npyenv的核心套路：\n在PATH最前面插入 ~/.pyenv/shims 目录（shims = 垫片） 敲击 python、pip、python3，shell 优先找到 shims 目录下同名脚本（起到了拦截的一个效果） shim 是轻量包装脚本，它调用 pyenv 程序，去查询当前应该使用哪个 Python 版本 再转发调用到对应版本真实的 Python 可执行文件 安装 首先安装一些编译python所需要的依赖（没有则安装）\nsudo pacman -S --needed base-devel openssl zlib xz tk 随后安装pyenv\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "基于vscode的Linux下的多python解释器 本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境。\n采用的是archlinux操作系统，不同发行版命令可能会有所不同。\narchlinux下的python解释 在安装linux操作系统时候，会自动下载最新版本的python解释器。这个解释器为系统解释器，将被安装在/usr目录下。具体如下：\n/usr/bin/python3 可执行程序位置 /usr/include/python3.x 源码/头文件位置 /usr/lib/python3.x 安装的库位置 /usr/lib/python3.x/site-packages site-packages(系统全局包位置) 同时，archlinux官方仓库中的python包一般指提供当前版本，不会提供\npython3.10 python3.11 python3.12 类似于上述这种指定了版本的python解释器。 那么安装额外的python解释器，便可以采用pyenv来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器\n系统 Python │ └── /usr/bin/python 额外 Python │ ├── Python 3.10 ├── Python 3.11 ├── Python 3.12 └── Python 3.13 pyenv的原理、安装与相关命令 pyenv 是一个用于在 Linux、macOS 上管理多个 Python 版本的命令行工具。\n原理 操作系统找命令的规则：按PATH从前往后依次搜索，找到第一个匹配的程序就执行。\npyenv的核心套路：\n在PATH最前面插入 ~/.pyenv/shims 目录（shims = 垫片） 敲击 python、pip、python3，shell 优先找到 shims 目录下同名脚本（起到了拦截的一个效果） shim 是轻量包装脚本，它调用 pyenv 程序，去查询当前应该使用哪个 Python 版本 再转发调用到对应版本真实的 Python 可执行文件 安装 首先安装一些编译python所需要的依赖（没有则安装）\nsudo pacman -S --needed base-devel openssl zlib xz tk 随后安装pyenv\nsudo pacman -S pyenv 安装完成后可以通过\npyenv --version 来检查是否安装成功。 安装后，pyenv将被建立在\n~/.pyenv 相关命令 下面来展示一些pyenv的相关命令。\n查看版本命令 pyenv version # 查看当前生效的 Python 版本 pyenv versions # 查看已安装的所有版本 pyenv version-name # 查看当前版本名 pyenv version-origin # 查看当前版本是从哪里指定的 pyenv latest # 查看某个大版本的最新小版本 安装与卸载 pyenv install --list # 查看可安装的 Python 版本 pyenv install 3.12.8 # 安装指定版本 pyenv uninstall 3.12.8 # 卸载指定版本 切换版本 pyenv global 3.12.8 # 设置全局默认版本 pyenv local 3.12.8 # 为当前目录设置版本，生成 .python-version pyenv shell 3.12.8 # 只在当前终端会话中生效 优先级通常是\nshell \u003e local \u003e global 查看路径与解析结果 pyenv which python # 查看 python 命令实际来自哪个版本 pyenv whence python # 查看哪些已安装版本提供 python pyenv prefix 3.12.8 # 查看指定版本的安装目录 pyenv root # 查看 pyenv 的安装根目录 pyenv shims # 查看所有 shim 文件 刷新命令入口 pyenv rehash 初始化和环境检查 pyenv init # 输出 Shell 初始化配置 pyenv init - # 输出可直接追加到 Shell 配置中的内容 pyenv doctor # 检查安装和配置情况（部分版本支持） 辅助命令 pyenv commands # 列出当前环境支持的所有命令 pyenv help # 查看帮助 pyenv help install # 查看某个命令的详细帮助 pyenv hooks exec # 查看 exec 命令的 hooks pyenv completions # 查看补全相关内容 其中大部分用不到，只会用到关键的命令：\npyenv install --list pyenv install 3.12.8 pyenv versions pyenv global 3.12.8 pyenv local 3.12.8 pyenv shell 3.12.8 pyenv uninstall 3.12.8 Shell的配置 在安装完pyenv之后，便需要将可执行文件添加到shell中，以便修改Sehll的PATH。这里用的是zsh的Shell，命令可能会与bash的命令有所区别。pyenv 本身是一个独立脚本，它没法自动修改 shell 的 PATH，也没法在 cd 文件夹时自动读取 .python-version。配置 shell（eval \"$(pyenv init -)\"）就是用来做两件核心事情：插入 shims 到 PATH 头部 + 注册 cd 钩子。\n编辑：\nnano ~/.zshrc 随后将下方代码添加到文件最下方并保存：\nexport PYENV_ROOT=\"$HOME/.pyenv\" export PATH=\"$PYENV_ROOT/bin:$PATH\" eval \"$(pyenv init - zsh)\" 然后可以刷新一下zsh：\nsource ~/.zshrc 也可以检查：\npyenv --version 额外python解释器的安装与验证 安装 在安装前需要先查看有哪些具体的python解释器版本可以安装\npyenv install --list | grep -E '^\\s*3\\.11' 管道符后的命令为筛选具体版本所用 随后选择一个具体的版本进行安装\npyenv install 3.10.xxx 安装的python解释器将被放在\n~/.pyenv/versions/3.xx 安装完之后可以查看已安装的python版本\npyenv versions 输出的结果应该为\n* system 3.10.13 3.11.9 3.12.8 3.13.1 其中*代表着该python解释器为当前版本。\n验证 先查看一下当前所用的python版本\npython --version 随后使用pyenv指令切换当前版本\npyenv global 3.1xx(其他版本) 再次查看当前所用的版本是否发生变化\npython --version 若发生了变化，则无问题。反之需要检查。 查看PATH路径是否正确\necho $PATH 正确的的结果应该为\n~/.pyenv/shims 出现在 /usr/bin 之前 若没有出现，则说明shell执行pythonI命令时，没有经过pyenv的shims。那么可能是Shell的配置出现了点问题。\nVsCode配置 安装扩展包Python 检查 重启 检查右下角python解释器是否识别到 项目环境的建立 这里展示两种项目环境的配置：带虚拟环境与不带虚拟环境\n带虚拟环境 带虚拟环境意味着你需要让采用统一解释器的不同项目使用这不同版本的库。\n终端进入项目所在文件。 注意这里进入的是项目所在文件，而不是所打开的工作区。 设置解释器 通过相关命令为项目制定python解释器 pyenv local 3.1xxx 设置完之后将发现 .python-version的生成。 创建虚拟环境 通过相关命令创建虚拟环境 python -m venv .venv 激活虚拟环境 source .venv/bin/activate 当然激活后，也可以用相关的命令查看项目当前python的版本 后续开发 不带虚拟环境 不带虚拟环境意味着多个采用了相同的python解释器的项目之间将使用一套相同的库。\n终端进入项目所在文件。 注意这里进入的是项目所在文件，而不是所打开的工作区。\n设置解释器 通过相关命令为项目制定python解释器\npyenv local 3.1xxx 设置完之后将发现 .python-version的生成。\n后续开发\n运行 环境搭建完成后，当需要运行程序时候，一般有两种。\nvscode终端运行 在终端处进入项目后，执行python xxx.py，当然运行前最好使用命令来查看项目的python版本或是激活虚拟环境。 点击vscode插件python所提供的右上角按钮。 这种方法有一定的弊端，因为插件带来的运行是基于你所打开的工作目录所运行的（即当前路径是工作区路径而不是项目路径），若代码中涉及到了相对路径或者工作区指定的python解释器不一致，都将产生一些麻烦，可以通过搜索Execute In File Dir进行更改设置。 所以，为了减少一些不必要的麻烦还是建议采用1。\n多解释器下的库管理 这里将介绍多解释器下的相关库如何正确管理，只是稍微改动了命令。在执行命令前，最好进入项目并且确认好虚拟环境的激活以及python版本。\n下载库 python -m pip install numpy python -m pip install numpy==1.12.2 指定安装特定版本的库 python -m pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple 清华源镜像下载 查看所下载的库 python -m pip list 卸载所下载的库 python -m pip uninstall 库名 问题 这里将展示一些运行过程中可能会遇到的问题。\nvscode终端与全局终端矛盾 这里的矛盾指的是比如说vscode终端执行相同命令的结果却与全局终端不一样。有可能是两个终端所用的Shell不一致，建议统一。可以在vscode的配置中更改默认终端的生成。\n存在波浪线但程序可以跑通。 这种情况可能是由于vscode中python扩展所选择的解释器版本与终端实际运行的版本不一致导致。 右下角的python解释器为VS Code Python 扩展当前为这个工作区/文件选择的 Python 解释器。它的作用是“你现在编辑的 Python 代码，我应该用哪个 Python 环境来进行代码分析、补全、Pylance 检查、调试等。”。那么当其缺少相关库的时候，便会出现波浪线。\n那为什么有时候出现了波浪线，点击右上角运行按钮却依然能够跑通？这是因为点击后会默认采用Run Code模式，此时会基于终端位置设置的local解释器来运行代码，而不是插件选择的解释器来运行代码。但是可以看到右上角运行有多种模式，其他模式就会采用插件选择的解释器来运行。所以最好还是采用终端输入命令的方式来跑代码。 ",
+  "wordCount" : "448",
+  "inLanguage": "en",
+  "datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Nanithal"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/%E5%9F%BA%E4%BA%8Evscode%E7%9A%84linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Nanithal 的博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Nanithal 的博客 (Alt + H)">Nanithal 的博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="文章">
+                    <span>文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="分类">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="标签">
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="关于">
+                    <span>关于</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">文章</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      
+    </h1>
+    <div class="post-meta">
+
+<span>3 min</span>&nbsp;·&nbsp;<span>448 words</span>&nbsp;·&nbsp;<span>Nanithal</span>
+
+</div>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e5%9f%ba%e4%ba%8evscode%e7%9a%84linux%e4%b8%8b%e7%9a%84%e5%a4%9apython%e8%a7%a3%e9%87%8a%e5%99%a8" aria-label="基于vscode的Linux下的多python解释器">基于vscode的Linux下的多python解释器</a><ul>
+                    
+            <li>
+                <a href="#archlinux%e4%b8%8b%e7%9a%84python%e8%a7%a3%e9%87%8a" aria-label="archlinux下的python解释">archlinux下的python解释</a></li>
+            <li>
+                <a href="#pyenv%e7%9a%84%e5%8e%9f%e7%90%86%e5%ae%89%e8%a3%85%e4%b8%8e%e7%9b%b8%e5%85%b3%e5%91%bd%e4%bb%a4" aria-label="pyenv的原理、安装与相关命令">pyenv的原理、安装与相关命令</a><ul>
+                    
+            <li>
+                <a href="#%e5%8e%9f%e7%90%86" aria-label="原理">原理</a></li>
+            <li>
+                <a href="#%e5%ae%89%e8%a3%85" aria-label="安装">安装</a></li>
+            <li>
+                <a href="#%e7%9b%b8%e5%85%b3%e5%91%bd%e4%bb%a4" aria-label="相关命令">相关命令</a><ul>
+                    
+            <li>
+                <a href="#%e6%9f%a5%e7%9c%8b%e7%89%88%e6%9c%ac%e5%91%bd%e4%bb%a4" aria-label="查看版本命令">查看版本命令</a></li>
+            <li>
+                <a href="#%e5%ae%89%e8%a3%85%e4%b8%8e%e5%8d%b8%e8%bd%bd" aria-label="安装与卸载">安装与卸载</a></li>
+            <li>
+                <a href="#%e5%88%87%e6%8d%a2%e7%89%88%e6%9c%ac" aria-label="切换版本">切换版本</a></li>
+            <li>
+                <a href="#%e6%9f%a5%e7%9c%8b%e8%b7%af%e5%be%84%e4%b8%8e%e8%a7%a3%e6%9e%90%e7%bb%93%e6%9e%9c" aria-label="查看路径与解析结果">查看路径与解析结果</a></li>
+            <li>
+                <a href="#%e5%88%b7%e6%96%b0%e5%91%bd%e4%bb%a4%e5%85%a5%e5%8f%a3" aria-label="刷新命令入口">刷新命令入口</a></li>
+            <li>
+                <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96%e5%92%8c%e7%8e%af%e5%a2%83%e6%a3%80%e6%9f%a5" aria-label="初始化和环境检查">初始化和环境检查</a></li>
+            <li>
+                <a href="#%e8%be%85%e5%8a%a9%e5%91%bd%e4%bb%a4" aria-label="辅助命令">辅助命令</a></li></ul>
+            </li></ul>
+            </li>
+            <li>
+                <a href="#shell%e7%9a%84%e9%85%8d%e7%bd%ae" aria-label="Shell的配置">Shell的配置</a></li>
+            <li>
+                <a href="#%e9%a2%9d%e5%a4%96python%e8%a7%a3%e9%87%8a%e5%99%a8%e7%9a%84%e5%ae%89%e8%a3%85%e4%b8%8e%e9%aa%8c%e8%af%81" aria-label="额外python解释器的安装与验证">额外python解释器的安装与验证</a><ul>
+                    
+            <li>
+                <a href="#%e5%ae%89%e8%a3%85-1" aria-label="安装">安装</a></li>
+            <li>
+                <a href="#%e9%aa%8c%e8%af%81" aria-label="验证">验证</a></li></ul>
+            </li>
+            <li>
+                <a href="#vscode%e9%85%8d%e7%bd%ae" aria-label="VsCode配置">VsCode配置</a></li>
+            <li>
+                <a href="#%e9%a1%b9%e7%9b%ae%e7%8e%af%e5%a2%83%e7%9a%84%e5%bb%ba%e7%ab%8b" aria-label="项目环境的建立">项目环境的建立</a><ul>
+                    
+            <li>
+                <a href="#%e5%b8%a6%e8%99%9a%e6%8b%9f%e7%8e%af%e5%a2%83" aria-label="带虚拟环境">带虚拟环境</a></li>
+            <li>
+                <a href="#%e4%b8%8d%e5%b8%a6%e8%99%9a%e6%8b%9f%e7%8e%af%e5%a2%83" aria-label="不带虚拟环境">不带虚拟环境</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e8%bf%90%e8%a1%8c" aria-label="运行">运行</a></li>
+            <li>
+                <a href="#%e5%a4%9a%e8%a7%a3%e9%87%8a%e5%99%a8%e4%b8%8b%e7%9a%84%e5%ba%93%e7%ae%a1%e7%90%86" aria-label="多解释器下的库管理">多解释器下的库管理</a><ul>
+                    
+            <li>
+                <a href="#%e4%b8%8b%e8%bd%bd%e5%ba%93" aria-label="下载库">下载库</a></li>
+            <li>
+                <a href="#%e6%9f%a5%e7%9c%8b%e6%89%80%e4%b8%8b%e8%bd%bd%e7%9a%84%e5%ba%93" aria-label="查看所下载的库">查看所下载的库</a></li>
+            <li>
+                <a href="#%e5%8d%b8%e8%bd%bd%e6%89%80%e4%b8%8b%e8%bd%bd%e7%9a%84%e5%ba%93" aria-label="卸载所下载的库">卸载所下载的库</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e9%97%ae%e9%a2%98" aria-label="问题">问题</a><ul>
+                    
+            <li>
+                <a href="#vscode%e7%bb%88%e7%ab%af%e4%b8%8e%e5%85%a8%e5%b1%80%e7%bb%88%e7%ab%af%e7%9f%9b%e7%9b%be" aria-label="vscode终端与全局终端矛盾">vscode终端与全局终端矛盾</a></li>
+            <li>
+                <a href="#%e5%ad%98%e5%9c%a8%e6%b3%a2%e6%b5%aa%e7%ba%bf%e4%bd%86%e7%a8%8b%e5%ba%8f%e5%8f%af%e4%bb%a5%e8%b7%91%e9%80%9a" aria-label="存在波浪线但程序可以跑通。">存在波浪线但程序可以跑通。</a>
+            </li>
+        </ul>
+        </li>
+        </ul>
+        </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><h1 id="基于vscode的linux下的多python解释器">基于vscode的Linux下的多python解释器<a hidden class="anchor" aria-hidden="true" href="#基于vscode的linux下的多python解释器">#</a></h1>
+<p><strong>本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境</strong>。</p>
+<blockquote>
+<p>采用的是archlinux操作系统，不同发行版命令可能会有所不同。</p>
+</blockquote>
+<h2 id="archlinux下的python解释">archlinux下的python解释<a hidden class="anchor" aria-hidden="true" href="#archlinux下的python解释">#</a></h2>
+<p>在安装linux操作系统时候，会<strong>自动下载最新版本的python解释器</strong>。这个解释器为<strong>系统解释器</strong>，将被安装在<code>/usr</code>目录下。具体如下：</p>
+<pre tabindex="0"><code>/usr/bin/python3    可执行程序位置
+/usr/include/python3.x  源码/头文件位置
+/usr/lib/python3.x 安装的库位置
+/usr/lib/python3.x/site-packages    site-packages(系统全局包位置)
+</code></pre><p><img alt="系统python解释器路径" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/SystemPythonPath.png">
+同时，archlinux官方仓库中的<code>python</code>包一般指提供当前版本，<strong>不会提供</strong></p>
+<pre tabindex="0"><code>python3.10
+python3.11
+python3.12
+</code></pre><p>类似于上述这种指定了版本的<code>python</code>解释器。
+那么<strong>安装额外的python解释器</strong>，便可以采用<strong>pyenv</strong>来管理，实现系统python与额外的python解释器互不冲突。即采用下方的结构来管理python解释器</p>
+<pre tabindex="0"><code>系统 Python
+    │
+    └── /usr/bin/python
+
+额外 Python
+    │
+    ├── Python 3.10
+    ├── Python 3.11
+    ├── Python 3.12
+    └── Python 3.13
+</code></pre><h2 id="pyenv的原理安装与相关命令">pyenv的原理、安装与相关命令<a hidden class="anchor" aria-hidden="true" href="#pyenv的原理安装与相关命令">#</a></h2>
+<p><strong>pyenv</strong> 是一个用于在 Linux、macOS 上管理多个 Python 版本的<strong>命令行工具</strong>。</p>
+<h3 id="原理">原理<a hidden class="anchor" aria-hidden="true" href="#原理">#</a></h3>
+<p>操作系统找命令的规则：按<code>PATH</code><strong>从前往后</strong>依次搜索，找到第一个匹配的程序就执行。</p>
+<p>pyenv的核心套路：</p>
+<ol>
+<li>在<code>PATH</code>最前面插入 <code>~/.pyenv/shims</code> 目录（shims = 垫片）</li>
+<li>敲击 <code>python</code>、<code>pip</code>、<code>python3</code>，shell 优先找到 shims 目录下同名脚本（起到了<strong>拦截</strong>的一个效果）</li>
+<li><strong>shim</strong> 是<strong>轻量包装脚本</strong>，它调用 <code>pyenv</code> 程序，去查询当前应该使用哪个 Python 版本</li>
+<li>再转发调用到对应版本真实的 Python 可执行文件</li>
+</ol>
+<h3 id="安装">安装<a hidden class="anchor" aria-hidden="true" href="#安装">#</a></h3>
+<p>首先安装一些编译<code>python</code>所需要的依赖（没有则安装）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">sudo pacman -S --needed base-devel openssl zlib xz tk
+</span></span></code></pre></div><p>随后安装<code>pyenv</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">sudo pacman -S pyenv
+</span></span></code></pre></div><p>安装完成后可以通过</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">pyenv --version
+</span></span></code></pre></div><p>来检查是否安装成功。
+安装后，pyenv将被建立在</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">~/.pyenv
+</span></span></code></pre></div><h3 id="相关命令">相关命令<a hidden class="anchor" aria-hidden="true" href="#相关命令">#</a></h3>
+<p>下面来展示一些<code>pyenv</code>的<strong>相关命令</strong>。</p>
+<h4 id="查看版本命令">查看版本命令<a hidden class="anchor" aria-hidden="true" href="#查看版本命令">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv version          <span class="c1"># 查看当前生效的 Python 版本</span>
+</span></span><span class="line"><span class="cl">pyenv versions         <span class="c1"># 查看已安装的所有版本</span>
+</span></span><span class="line"><span class="cl">pyenv version-name     <span class="c1"># 查看当前版本名</span>
+</span></span><span class="line"><span class="cl">pyenv version-origin   <span class="c1"># 查看当前版本是从哪里指定的</span>
+</span></span><span class="line"><span class="cl">pyenv latest           <span class="c1"># 查看某个大版本的最新小版本</span>
+</span></span></code></pre></div><h4 id="安装与卸载">安装与卸载<a hidden class="anchor" aria-hidden="true" href="#安装与卸载">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv install --list        <span class="c1"># 查看可安装的 Python 版本</span>
+</span></span><span class="line"><span class="cl">pyenv install 3.12.8        <span class="c1"># 安装指定版本</span>
+</span></span><span class="line"><span class="cl">pyenv uninstall 3.12.8      <span class="c1"># 卸载指定版本</span>
+</span></span></code></pre></div><h4 id="切换版本">切换版本<a hidden class="anchor" aria-hidden="true" href="#切换版本">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv global 3.12.8     <span class="c1"># 设置全局默认版本</span>
+</span></span><span class="line"><span class="cl">pyenv <span class="nb">local</span> 3.12.8      <span class="c1"># 为当前目录设置版本，生成 .python-version</span>
+</span></span><span class="line"><span class="cl">pyenv shell 3.12.8      <span class="c1"># 只在当前终端会话中生效</span>
+</span></span></code></pre></div><p>优先级通常是</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">shell &gt; local &gt; global
+</span></span></code></pre></div><h4 id="查看路径与解析结果">查看路径与解析结果<a hidden class="anchor" aria-hidden="true" href="#查看路径与解析结果">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv which python        <span class="c1"># 查看 python 命令实际来自哪个版本</span>
+</span></span><span class="line"><span class="cl">pyenv whence python       <span class="c1"># 查看哪些已安装版本提供 python</span>
+</span></span><span class="line"><span class="cl">pyenv prefix 3.12.8       <span class="c1"># 查看指定版本的安装目录</span>
+</span></span><span class="line"><span class="cl">pyenv root                <span class="c1"># 查看 pyenv 的安装根目录</span>
+</span></span><span class="line"><span class="cl">pyenv shims               <span class="c1"># 查看所有 shim 文件</span>
+</span></span></code></pre></div><h4 id="刷新命令入口">刷新命令入口<a hidden class="anchor" aria-hidden="true" href="#刷新命令入口">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv rehash
+</span></span></code></pre></div><h4 id="初始化和环境检查">初始化和环境检查<a hidden class="anchor" aria-hidden="true" href="#初始化和环境检查">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv init              <span class="c1"># 输出 Shell 初始化配置</span>
+</span></span><span class="line"><span class="cl">pyenv init -            <span class="c1"># 输出可直接追加到 Shell 配置中的内容</span>
+</span></span><span class="line"><span class="cl">pyenv doctor            <span class="c1"># 检查安装和配置情况（部分版本支持）</span>
+</span></span></code></pre></div><h4 id="辅助命令">辅助命令<a hidden class="anchor" aria-hidden="true" href="#辅助命令">#</a></h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv commands          <span class="c1"># 列出当前环境支持的所有命令</span>
+</span></span><span class="line"><span class="cl">pyenv <span class="nb">help</span>              <span class="c1"># 查看帮助</span>
+</span></span><span class="line"><span class="cl">pyenv <span class="nb">help</span> install      <span class="c1"># 查看某个命令的详细帮助</span>
+</span></span><span class="line"><span class="cl">pyenv hooks <span class="nb">exec</span>        <span class="c1"># 查看 exec 命令的 hooks</span>
+</span></span><span class="line"><span class="cl">pyenv completions       <span class="c1"># 查看补全相关内容</span>
+</span></span></code></pre></div><p>其中大部分用不到，只会用到关键的命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv install --list
+</span></span><span class="line"><span class="cl">pyenv install 3.12.8
+</span></span><span class="line"><span class="cl">pyenv versions
+</span></span><span class="line"><span class="cl">pyenv global 3.12.8
+</span></span><span class="line"><span class="cl">pyenv <span class="nb">local</span> 3.12.8
+</span></span><span class="line"><span class="cl">pyenv shell 3.12.8
+</span></span><span class="line"><span class="cl">pyenv uninstall 3.12.8
+</span></span></code></pre></div><h2 id="shell的配置">Shell的配置<a hidden class="anchor" aria-hidden="true" href="#shell的配置">#</a></h2>
+<p>在安装完<code>pyenv</code>之后，便需要将<strong>可执行文件</strong>添加到shell中，以便修改<strong>Sehll</strong>的<strong>PATH</strong>。这里用的是<code>zsh</code>的<code>Shell</code>，命令可能会与<code>bash</code>的命令有所区别。pyenv 本身是一个独立脚本，<strong>它没法自动修改 shell 的 PATH，也没法在 cd 文件夹时自动读取 <code>.python-version</code></strong>。配置 shell（<code>eval &quot;$(pyenv init -)&quot;</code>）就是用来做两件核心事情：<strong>插入 shims 到 PATH 头部 + 注册 cd 钩子</strong>。</p>
+<blockquote>
+</blockquote>
+<p>编辑：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nano ~/.zshrc
+</span></span></code></pre></div><p>随后将下方代码添加到文件最下方并保存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">PYENV_ROOT</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/.pyenv&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PYENV_ROOT</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">eval</span> <span class="s2">&#34;</span><span class="k">$(</span>pyenv init - zsh<span class="k">)</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>然后可以刷新一下<code>zsh</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">source</span> ~/.zshrc
+</span></span></code></pre></div><p>也可以检查：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv --version
+</span></span></code></pre></div><h2 id="额外python解释器的安装与验证">额外python解释器的安装与验证<a hidden class="anchor" aria-hidden="true" href="#额外python解释器的安装与验证">#</a></h2>
+<h3 id="安装-1">安装<a hidden class="anchor" aria-hidden="true" href="#安装-1">#</a></h3>
+<p>在安装前需要先<strong>查看有哪些具体的python解释器版本可以安装</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv install --list <span class="p">|</span> grep -E <span class="s1">&#39;^\s*3\.11&#39;</span>  管道符后的命令为筛选具体版本所用
+</span></span></code></pre></div><p>随后选择一个具体的版本进行安装</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv install 3.10.xxx
+</span></span></code></pre></div><p>安装的python解释器将被放在</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">~/.pyenv/versions/3.xx
+</span></span></code></pre></div><p>安装完之后可以查看已安装的python版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv versions
+</span></span></code></pre></div><p>输出的结果应该为</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">* system
+</span></span><span class="line"><span class="cl">  3.10.13
+</span></span><span class="line"><span class="cl">  3.11.9
+</span></span><span class="line"><span class="cl">  3.12.8
+</span></span><span class="line"><span class="cl">  3.13.1
+</span></span></code></pre></div><p>其中<code>*</code>代表着该python解释器为<strong>当前版本</strong>。</p>
+<h3 id="验证">验证<a hidden class="anchor" aria-hidden="true" href="#验证">#</a></h3>
+<p>先查看一下当前所用的python版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python --version
+</span></span></code></pre></div><p>随后使用<code>pyenv</code>指令切换当前版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv global 3.1xx<span class="o">(</span>其他版本<span class="o">)</span>
+</span></span></code></pre></div><p>再次查看当前所用的版本<strong>是否发生变化</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python --version
+</span></span></code></pre></div><p>若发生了变化，则无问题。反之需要检查。
+查看<code>PATH</code>路径是否正确</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$PATH</span>
+</span></span></code></pre></div><p>正确的的结果应该为</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">~/.pyenv/shims 出现在 /usr/bin  之前 
+</span></span></code></pre></div><p>若没有出现，则说明shell执行pythonI命令时，<strong>没有经过pyenv的shims</strong>。那么可能是<strong>Shell的配置出现了点问题</strong>。</p>
+<h2 id="vscode配置">VsCode配置<a hidden class="anchor" aria-hidden="true" href="#vscode配置">#</a></h2>
+<ol>
+<li>安装扩展包<strong>Python</strong>
+<img alt="vscode扩展包pythonlogo" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/VscodePluginPython.png"></li>
+<li>检查
+<ol>
+<li>重启</li>
+<li>检查右下角python解释器是否识别到
+<img alt="vscode选择python解释器" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/VscodeSelectPython.png"></li>
+</ol>
+</li>
+</ol>
+<h2 id="项目环境的建立">项目环境的建立<a hidden class="anchor" aria-hidden="true" href="#项目环境的建立">#</a></h2>
+<p>这里展示两种项目环境的配置：<strong>带虚拟环境</strong>与<strong>不带虚拟环境</strong></p>
+<h3 id="带虚拟环境">带虚拟环境<a hidden class="anchor" aria-hidden="true" href="#带虚拟环境">#</a></h3>
+<p>带虚拟环境意味着你需要让<strong>采用统一解释器的不同项目使用这不同版本的库</strong>。</p>
+<ol>
+<li><strong>终端进入项目所在文件</strong>。
+注意这里进入的是项目所在文件，而不是所打开的工作区。
+<img alt="打开的工作区" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/VscodeWorkfolder.png" title="工作区结构">
+<img alt="终端路径" loading="lazy" src="../img//%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/CorrectTerminal.png" title="终端所在路径"></li>
+<li><strong>设置解释器</strong>
+通过相关命令为项目制定python解释器
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv <span class="nb">local</span> 3.1xxx
+</span></span></code></pre></div>设置完之后将发现 <strong>.python-version的生成</strong>。
+<img alt=".python-version生成" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/Vscode.python-version.png" title=".python-version生成"></li>
+<li><strong>创建虚拟环境</strong>
+通过相关命令创建虚拟环境
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python -m venv .venv
+</span></span></code></pre></div><img alt="虚拟环境创建" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/Veve.png" title="虚拟环境创建"></li>
+<li><strong>激活虚拟环境</strong>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">source</span> .venv/bin/activate
+</span></span></code></pre></div>当然激活后，也可以用相关的命令查看项目当前python的版本</li>
+<li><strong>后续开发</strong></li>
+</ol>
+<h3 id="不带虚拟环境">不带虚拟环境<a hidden class="anchor" aria-hidden="true" href="#不带虚拟环境">#</a></h3>
+<p>不带虚拟环境意味着<strong>多个采用了相同的python解释器的项目之间将使用一套相同的库</strong>。</p>
+<ol>
+<li>
+<p><strong>终端进入项目所在文件</strong>。
+注意这里进入的是项目所在文件，而不是所打开的工作区。</p>
+</li>
+<li>
+<p><strong>设置解释器</strong>
+通过相关命令为项目制定python解释器</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pyenv <span class="nb">local</span> 3.1xxx
+</span></span></code></pre></div><p>设置完之后将发现 <strong>.python-version</strong>的生成。</p>
+</li>
+<li>
+<p><strong>后续开发</strong></p>
+</li>
+</ol>
+<h2 id="运行">运行<a hidden class="anchor" aria-hidden="true" href="#运行">#</a></h2>
+<p>环境搭建完成后，当<strong>需要运行程序时候</strong>，一般有两种。</p>
+<ol>
+<li><strong>vscode终端</strong>运行
+在终端处进入项目后，执行<strong>python xxx.py</strong>，当然运行前最好使用命令来<strong>查看项目的python版本或是激活虚拟环境</strong>。</li>
+<li>点击vscode插件python所提供的右上角按钮。
+这种方法有一定的<strong>弊端</strong>，因为插件带来的运行是基于你所打开的工作目录所运行的（即当前路径是工作区路径而不是项目路径），若代码中涉及到了相对路径或者工作区指定的python解释器不一致，都将产生一些麻烦，可以通过搜索<code>Execute In File Dir</code>进行更改设置。</li>
+</ol>
+<p>所以，为了减少一些不必要的麻烦还是建议采用<strong>1</strong>。</p>
+<h2 id="多解释器下的库管理">多解释器下的库管理<a hidden class="anchor" aria-hidden="true" href="#多解释器下的库管理">#</a></h2>
+<p>这里将介绍多解释器下的相关库如何正确管理，只是稍微改动了命令。在执行命令前，<strong>最好进入项目并且确认好虚拟环境的激活以及python版本</strong>。</p>
+<h3 id="下载库">下载库<a hidden class="anchor" aria-hidden="true" href="#下载库">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python -m pip install numpy
+</span></span><span class="line"><span class="cl">python -m pip install <span class="nv">numpy</span><span class="o">==</span>1.12.2 指定安装特定版本的库
+</span></span><span class="line"><span class="cl">python -m pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple 清华源镜像下载
+</span></span></code></pre></div><h3 id="查看所下载的库">查看所下载的库<a hidden class="anchor" aria-hidden="true" href="#查看所下载的库">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python -m pip list
+</span></span></code></pre></div><h3 id="卸载所下载的库">卸载所下载的库<a hidden class="anchor" aria-hidden="true" href="#卸载所下载的库">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python -m pip uninstall 库名
+</span></span></code></pre></div><h2 id="问题">问题<a hidden class="anchor" aria-hidden="true" href="#问题">#</a></h2>
+<p>这里将展示一些运行过程中可能会遇到的问题。</p>
+<h3 id="vscode终端与全局终端矛盾">vscode终端与全局终端矛盾<a hidden class="anchor" aria-hidden="true" href="#vscode终端与全局终端矛盾">#</a></h3>
+<p>这里的矛盾指的是比如说vscode终端执行相同命令的结果却与全局终端不一样。有可能是两个终端所用的<strong>Shell不一致</strong>，建议统一。可以在vscode的配置中<strong>更改默认终端的生成</strong>。</p>
+<h3 id="存在波浪线但程序可以跑通">存在波浪线但程序可以跑通。<a hidden class="anchor" aria-hidden="true" href="#存在波浪线但程序可以跑通">#</a></h3>
+<p>这种情况可能是由于<strong>vscode中python扩展所选择的解释器版本与终端实际运行的版本不一致导致</strong>。
+<img alt="解释器不同" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/DifferentInterpreter.png" title="vscode插件选择的解释器与项目解释器之间的差异"></p>
+<p>右下角的python解释器为<strong>VS Code Python 扩展当前为这个工作区/文件选择的 Python 解释器</strong>。它的<strong>作用</strong>是“你现在编辑的 Python 代码，我应该用哪个 Python 环境来进行代码分析、补全、Pylance 检查、调试等。”。那么当其缺少相关库的时候，便会出现波浪线。</p>
+<p>那为什么有时候出现了波浪线，点击右上角运行按钮却依然能够跑通？这是因为点击后会默认采用<strong>Run Code</strong>模式，此时会基于<strong>终端位置设置的local解释器</strong>来运行代码，而不是插件选择的解释器来运行代码。但是可以看到右上角运行有多种模式，其他模式就会采用插件选择的解释器来运行。所以最好还是<strong>采用终端输入命令的方式来跑代码</strong>。
+<img alt="插件提供的运行模式" loading="lazy" src="../img/%E5%9F%BA%E4%BA%8Escone%E7%9A%84Linux%E4%B8%8B%E7%9A%84%E5%A4%9Apython%E8%A7%A3%E9%87%8A%E5%99%A8%E9%85%8D%E7%BD%AE/RunPatterns.png" title="插件提供的代码运行模式"></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/markdown%E6%80%8E%E4%B9%88%E5%86%99%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E8%AE%B2%E6%B8%85%E6%A5%9A/">
+    <span class="title">« Prev</span>
+    <span></span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on x"
+            href="https://x.com/intent/tweet/?text=&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f&amp;title=&amp;summary=&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f&title=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on whatsapp"
+            href="https://api.whatsapp.com/send?text=%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on telegram"
+            href="https://telegram.me/share/url?text=&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share  on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E5%259F%25BA%25E4%25BA%258Evscode%25E7%259A%2584linux%25E4%25B8%258B%25E7%259A%2584%25E5%25A4%259Apython%25E8%25A7%25A3%25E9%2587%258A%25E5%2599%25A8%25E9%2585%258D%25E7%25BD%25AE%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Nanithal 的博客</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

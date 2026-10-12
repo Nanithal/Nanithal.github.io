@@ -4,11 +4,15 @@ timeZone = 'Asia/Shanghai'
 title = 'Nanithal 的博客'
 theme = 'PaperMod'
 
+
 [params]
     env = 'production'
-    description = 'Nanithal 的个人技术博客'
+    title = 'Nanithal 的博客'
+    description = '记录学习、项目以及思考'
     author = 'Nanithal'
+
     defaultTheme = 'auto'
+
     ShowReadingTime = true
     ShowShareButtons = true
     ShowPostNavLinks = true
@@ -16,3 +20,96 @@ theme = 'PaperMod'
     ShowBreadCrumbs = true
     ShowWordCount = true
     ShowRssButtonInSectionTermList = true
+
+    ShowToc = true  # 文章页面默认显示目录
+    TocOpen = true  # 目录默认展开
+
+    # 首页介绍配置
+    [params.homeInfoParams]
+        Title = "Hello, I'm Nanithal"
+        Content = '''
+I have something to share with you.
+
+这里是我的秘密基地。
+
+主要记录：
+
+- Linux / Arch Linux
+- C / C++
+- Python
+- 机器学习
+- 嵌入式系统
+- 算法与竞赛
+- 项目开发与实践
+- 思考
+
+希望将这里变成一个花园。
+'''
+
+# 增加首页社交图标
+[[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/Nanithal"
+
+# ========== Hugo + KaTeX配置LaTeX公式 ==========
+[markup.goldmark.extensions.passthrough]
+enable = true
+
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['\[', '\]'], ['$$', '$$']]
+inline = [['\(', '\)'], ['$', '$']]
+
+
+
+# 建立分区的相关操作
+[[menu.main]]
+    identifier = "home"
+    name = "首页"
+    url = "/"
+    weight = 10
+
+[[menu.main]]
+    identifier = "posts"
+    name = "文章"
+    url = "/posts/"
+    weight = 20
+
+[[menu.main]]
+    identifier = "categories"
+    name = "分类"
+    url = "/categories/"
+    weight = 30
+
+[[menu.main]]
+    identifier = "tags"
+    name = "标签"
+    url = "/tags/"
+    weight = 40
+
+[[menu.main]]
+    identifier = "archives"
+    name = "归档"
+    url = "/archives/"
+    weight = 50
+
+[[menu.main]]
+    identifier = "about"
+    name = "关于"
+    url = "/about/"
+    weight = 60
+
+[[menu.main]]
+    identifier = "search"
+    name = "搜索"
+    url = "/search/"
+    weight = 70
+
+# 代码高亮显示配置
+[markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = false
+    lineNos = false
+
+[outputs]
+    home = ["HTML", "RSS", "JSON"]

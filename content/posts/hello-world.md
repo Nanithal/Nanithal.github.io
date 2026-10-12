@@ -1,7 +1,19 @@
 ---
 title: "Hello World"
 date: 2026-10-04T00:00:00+08:00
-draft: false # 这里必须是false,若为true,则代表是草稿，正常构建时则不会显示
+draft: false
+
+description: "我的第一篇博客，记录创建这个技术博客的初衷"
+
+categories:
+    - 博客
+    - 哈哈哈哈
+tags:
+    - Hugo
+    - PaperMod
+    - GitHub Pages
+
+showToc: false  # 针对短文章的话，可以不展开目录
 ---
 
 # Hello World
