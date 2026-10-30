@@ -141,3 +141,6 @@ inline = [['\(', '\)'], ['$', '$']]
 
 [sitemap]
     filename = 'sitemap.xml'
+
+[params.analytics.google]
+    SiteVerificationTag = 'b2cFt-Wr5M6k1N6AhDa9HmsfnbRRHo5tWZz1UJnKW3g'
