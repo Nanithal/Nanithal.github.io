@@ -5,14 +5,14 @@ hasCJKLanguage = true
 enableRobotsTXT = true
 mainSections = ['posts']
 timeZone = 'Asia/Shanghai'
-title = 'Nanithal 的博客'
+title = 'Nanithal 的技术博客｜学习笔记与项目实践'
 theme = 'PaperMod'
 
 
 [params]
     env = 'production'
-    title = 'Nanithal 的博客'
-    description = '记录学习、项目以及思考'
+    title = 'Nanithal 的技术博客｜学习笔记与项目实践'
+    description = 'Nanithal 的个人技术博客，记录 Linux 与 Arch Linux 配置、C/C++ 和 Python 编程、数据结构与算法、机器学习和嵌入式系统的学习笔记，分享项目实践中的问题、解决过程与技术思考。'
     author = 'Nanithal'
     images = ['/images/social-card.png']
     keywords = ['Nanithal', 'Linux', '编程', '算法', '机器学习', '嵌入式']
@@ -144,3 +144,7 @@ inline = [['\(', '\)'], ['$', '$']]
 
 [params.analytics.google]
     SiteVerificationTag = 'b2cFt-Wr5M6k1N6AhDa9HmsfnbRRHo5tWZz1UJnKW3g'
+
+# 导航栏保留简洁的站点名称。
+[params.label]
+    text = 'Nanithal 的博客'
