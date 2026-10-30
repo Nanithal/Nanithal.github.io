@@ -11,6 +11,7 @@ tags:
   - GitHub
 showToc: true
 TocOpen: true
+summary: "整理 Git 常用命令，以及本地仓库与 GitHub 之间的版本管理和协作流程。"
 ---
 
 # Git 命令大全 + Git 与 GitHub 完整协作教程

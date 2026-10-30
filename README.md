@@ -17,7 +17,7 @@ hugo server -D --renderToMemory
 hugo new content posts/my-new-post.md
 ```
 
-文章模板自动生成 YAML、日期和 `draft: true`。填写标题、简介、分类和标签，正文从二级标题开始。
+文章模板自动生成 YAML、日期和 `draft: true`。填写标题、简介、首页摘要、分类和标签，正文从二级标题开始。`summary` 用作首页摘要，可与 `description` 相同，避免首页截取正文中的代码和公式。
 分类按大方向选择：Linux、编程、算法、机器学习、嵌入式、项目、博客。标签描述具体技术。
 
 图片放在 `static/images/posts/my-new-post/`，正文使用：

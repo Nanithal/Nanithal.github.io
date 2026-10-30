@@ -13,6 +13,7 @@ description: "测试 LaTeX 分式、求和、矩阵与多行公式的渲染效�
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "测试 LaTeX 分式、求和、矩阵与多行公式的渲染效果。"
 ---
 
 # LaTeX 数学公式测试

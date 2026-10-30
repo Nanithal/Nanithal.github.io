@@ -17,6 +17,7 @@ description: "测试博客中的行内数学公式、独立公式与梯度表达
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "测试博客中的行内数学公式、独立公式与梯度表达式。"
 ---
 
 # 数学公式测试

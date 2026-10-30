@@ -18,6 +18,7 @@ TocOpen: true
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "测试 Hugo 中的 Mermaid 流程图"
 ---
 
 # Mermaid 流程图测试

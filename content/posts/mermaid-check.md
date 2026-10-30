@@ -13,6 +13,7 @@ TocOpen: true
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "检查流程图、时序图、状态图和饼图能否正常显示"
 ---
 
 本文用于检查 Mermaid 在同一篇文章中的多图渲染，以及中文标签、分支和循环是否正常显示。

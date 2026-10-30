@@ -14,6 +14,7 @@ description: "测试 C++、Python、Bash 与 TOML 代码高亮和复制功能。
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "测试 C++、Python、Bash 与 TOML 代码高亮和复制功能。"
 ---
 
 # C++

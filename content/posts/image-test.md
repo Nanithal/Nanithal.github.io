@@ -16,6 +16,7 @@ showToc: false
 robotsNoIndex: true
 sitemap:
   disable: true
+summary: "测试 Hugo 博客中的图片引用"
 ---
 
 # 图片显示测试

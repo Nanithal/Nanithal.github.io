@@ -13,6 +13,7 @@ tags:
     - GitHub Pages
 
 showToc: false  # 针对短文章的话，可以不展开目录
+summary: "我的第一篇博客，记录创建这个技术博客的初衷"
 ---
 
 # Hello World

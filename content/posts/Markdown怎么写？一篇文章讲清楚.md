@@ -11,6 +11,7 @@ tags:
   - 博客写作
 showToc: true
 TocOpen: true
+summary: "整理 Markdown 基础语法、GFM 扩展，以及博客写作中的链接、图片和排版方法。"
 ---
 
 # Markdown 语法总结指南｜博客写作必备

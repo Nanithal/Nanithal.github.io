@@ -14,6 +14,7 @@ tags:
   - pyenv
 showToc: true
 TocOpen: true
+summary: "在 Arch Linux 中使用 pyenv 管理多个 Python 版本，并在 VS Code 中配置项目解释器与虚拟环境。"
 ---
 
 # 基于vscode的Linux下的多python解释器
