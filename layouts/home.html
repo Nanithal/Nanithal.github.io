@@ -1,0 +1,61 @@
+{{ define "main" }}
+{{ $articles := where (where site.RegularPages "Type" "in" site.Params.mainSections) "Params.robotsNoIndex" "ne" true }}
+<div class="studio-home">
+  <section class="studio-hero" aria-labelledby="home-title">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>NANITHAL / PERSONAL BLOG</p>
+      {{ with site.Params.homeInfoParams }}
+      <h1 id="home-title">{{ .Title }}<br><span>{{ .Highlight }}</span></h1>
+      <p class="hero-description">{{ .Content }}</p>
+      {{ end }}
+      <div class="hero-actions">
+        <a class="button-primary" href="{{ "posts/" | relURL }}">探索文章 <span aria-hidden="true">↗</span></a>
+        <a class="button-text" href="{{ "about/" | relURL }}">关于我 <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="hero-footnote"><span aria-hidden="true">//</span> {{ site.Params.homeInfoParams.Note }}</p>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="visual-grid"></div>
+      <div class="orbit orbit-outer"></div><div class="orbit orbit-inner"></div>
+      <div class="orbit-point point-blue"></div><div class="orbit-point point-purple"></div>
+      <div class="visual-core"><span>N<span class="core-period">.</span></span></div>
+      <div class="visual-label label-learn"><span>01</span> LEARN</div>
+      <div class="visual-label label-build"><span>02</span> BUILD</div>
+      <div class="visual-label label-share"><span>03</span> SHARE</div>
+      <div class="visual-caption"><span class="status-dot"></span> ideas → code → notes</div>
+    </div>
+  </section>
+
+  <div class="interest-strip" aria-label="记录的方向">
+    <span class="strip-label">EXPLORING</span>
+    <div class="interest-items">{{ range site.Params.homeInfoParams.Topics }}<span>{{ . }}</span>{{ end }}</div>
+  </div>
+
+  <section class="recent-notes" aria-labelledby="recent-title">
+    <header class="section-heading">
+      <div><p class="eyebrow">THE NOTEBOOK</p><h2 id="recent-title">最近的记录<span class="section-dot">.</span></h2></div>
+      <a class="section-link" href="{{ "archives/" | relURL }}">查看归档 <span aria-hidden="true">↗</span></a>
+    </header>
+    <div class="note-list">
+      {{ range $index, $page := first 5 $articles }}
+      <article class="note-row">
+        <span class="note-number" aria-hidden="true">{{ printf "%02d" (add $index 1) }}</span>
+        <div class="note-body">
+          <div class="note-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time><span class="meta-divider">/</span>{{ with .GetTerms "categories" }}{{ range first 1 . }}<span class="note-category">{{ .LinkTitle }}</span>{{ end }}{{ end }}<span class="meta-divider">/</span><span>{{ .ReadingTime }} 分钟阅读</span></div>
+          <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+          <p class="note-summary">{{ .Summary | plainify | htmlUnescape }}</p>
+          <div class="note-tags">{{ range first 3 (.GetTerms "tags") }}<span># {{ .LinkTitle }}</span>{{ end }}</div>
+        </div>
+        <span class="note-arrow" aria-hidden="true">↗</span>
+      </article>
+      {{ end }}
+    </div>
+    <a class="all-notes" href="{{ "posts/" | relURL }}">浏览全部文章 <span aria-hidden="true">→</span></a>
+  </section>
+
+  <aside class="garden-note">
+    <div><p class="eyebrow">A GARDEN, NOT A FINISH LINE</p><p>慢慢积累，让这里成为一座知识花园。</p></div>
+    <div class="garden-links"><a href="https://github.com/Nanithal" rel="noopener noreferrer" target="_blank">GitHub ↗</a><a href="{{ "index.xml" | relURL }}">RSS 订阅 ↗</a></div>
+  </aside>
+</div>
+{{ end }}
