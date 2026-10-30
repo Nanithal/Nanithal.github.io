@@ -1,3 +1,21 @@
+---
+title: "基于 VS Code 的 Linux 多 Python 解释器配置"
+date: 2026-10-12T13:14:07+08:00
+lastmod: 2026-10-30
+draft: false
+description: "在 Arch Linux 中使用 pyenv 管理多个 Python 版本，并在 VS Code 中配置项目解释器与虚拟环境。"
+categories:
+  - Linux
+tags:
+  - Linux
+  - Arch Linux
+  - Python
+  - VS Code
+  - pyenv
+showToc: true
+TocOpen: true
+---
+
 # 基于vscode的Linux下的多python解释器
 
 **本文记录如何在Linux操作系统下构建vscode的多python解释器编程环境**。
@@ -11,7 +29,7 @@
 /usr/lib/python3.x 安装的库位置
 /usr/lib/python3.x/site-packages    site-packages(系统全局包位置)
 ```
-![系统python解释器路径](../img/基于scone的Linux下的多python解释器配置/SystemPythonPath.png)
+![系统python解释器路径](/images/posts/vscode-python-environments/SystemPythonPath.png)
 同时，archlinux官方仓库中的`python`包一般指提供当前版本，**不会提供**
 ```
 python3.10
@@ -215,11 +233,11 @@ echo $PATH
 
 ## VsCode配置
 1. 安装扩展包**Python**
-![vscode扩展包pythonlogo](../img/基于scone的Linux下的多python解释器配置/VscodePluginPython.png)
+![vscode扩展包pythonlogo](/images/posts/vscode-python-environments/VscodePluginPython.png)
 2. 检查
     1. 重启
     2. 检查右下角python解释器是否识别到
-    ![vscode选择python解释器](../img/基于scone的Linux下的多python解释器配置/VscodeSelectPython.png)
+    ![vscode选择python解释器](/images/posts/vscode-python-environments/VscodeSelectPython.png)
 
 ## 项目环境的建立
 这里展示两种项目环境的配置：**带虚拟环境**与**不带虚拟环境**
@@ -228,21 +246,21 @@ echo $PATH
 带虚拟环境意味着你需要让**采用统一解释器的不同项目使用这不同版本的库**。
 1. **终端进入项目所在文件**。
    注意这里进入的是项目所在文件，而不是所打开的工作区。
-   ![打开的工作区](../img/基于scone的Linux下的多python解释器配置/VscodeWorkfolder.png "工作区结构")
-   ![终端路径](../img//基于scone的Linux下的多python解释器配置/CorrectTerminal.png "终端所在路径")
+   ![打开的工作区](/images/posts/vscode-python-environments/VscodeWorkfolder.png "工作区结构")
+   ![终端路径](/images/posts/vscode-python-environments/CorrectTerminal.png "终端所在路径")
 2. **设置解释器**
    通过相关命令为项目制定python解释器
    ```bash
    pyenv local 3.1xxx
    ```
    设置完之后将发现 **.python-version的生成**。
-   ![.python-version生成](../img/基于scone的Linux下的多python解释器配置/Vscode.python-version.png ".python-version生成")
+   ![.python-version生成](/images/posts/vscode-python-environments/Vscode.python-version.png ".python-version生成")
 3. **创建虚拟环境**
    通过相关命令创建虚拟环境
    ```bash
    python -m venv .venv
    ```
-   ![虚拟环境创建](../img/基于scone的Linux下的多python解释器配置/Veve.png "虚拟环境创建")
+   ![虚拟环境创建](/images/posts/vscode-python-environments/Veve.png "虚拟环境创建")
 4. **激活虚拟环境**
    ```bash
    source .venv/bin/activate
@@ -299,9 +317,9 @@ python -m pip uninstall 库名
 
 ### 存在波浪线但程序可以跑通。
 这种情况可能是由于**vscode中python扩展所选择的解释器版本与终端实际运行的版本不一致导致**。
-![解释器不同](../img/基于scone的Linux下的多python解释器配置/DifferentInterpreter.png "vscode插件选择的解释器与项目解释器之间的差异")
+![解释器不同](/images/posts/vscode-python-environments/DifferentInterpreter.png "vscode插件选择的解释器与项目解释器之间的差异")
 
 右下角的python解释器为**VS Code Python 扩展当前为这个工作区/文件选择的 Python 解释器**。它的**作用**是“你现在编辑的 Python 代码，我应该用哪个 Python 环境来进行代码分析、补全、Pylance 检查、调试等。”。那么当其缺少相关库的时候，便会出现波浪线。
 
 那为什么有时候出现了波浪线，点击右上角运行按钮却依然能够跑通？这是因为点击后会默认采用**Run Code**模式，此时会基于**终端位置设置的local解释器**来运行代码，而不是插件选择的解释器来运行代码。但是可以看到右上角运行有多种模式，其他模式就会采用插件选择的解释器来运行。所以最好还是**采用终端输入命令的方式来跑代码**。
-![插件提供的运行模式](../img/基于scone的Linux下的多python解释器配置/RunPatterns.png "插件提供的代码运行模式")
+![插件提供的运行模式](/images/posts/vscode-python-environments/RunPatterns.png "插件提供的代码运行模式")

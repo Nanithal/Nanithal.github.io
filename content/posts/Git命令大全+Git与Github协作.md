@@ -1,3 +1,18 @@
+---
+title: "Git 命令大全 + Git 与 GitHub 完整协作教程"
+date: 2026-10-12T13:14:07+08:00
+lastmod: 2026-10-30
+draft: false
+description: "整理 Git 常用命令，以及本地仓库与 GitHub 之间的版本管理和协作流程。"
+categories:
+  - Linux
+tags:
+  - Git
+  - GitHub
+showToc: true
+TocOpen: true
+---
+
 # Git 命令大全 + Git 与 GitHub 完整协作教程
 
 > 

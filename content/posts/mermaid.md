@@ -15,6 +15,9 @@ tags:
 
 showToc: true
 TocOpen: true
+robotsNoIndex: true
+sitemap:
+  disable: true
 ---
 
 # Mermaid 流程图测试

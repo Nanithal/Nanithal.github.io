@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#142b32"/>
+<path d="M0 540H1200M820 0V630" stroke="#31535c" stroke-width="2"/>
+<rect x="64" y="66" width="44" height="6" rx="3" fill="#a7e4cb"/>
+<text x="128" y="77" font-family="DejaVu Sans,sans-serif" font-size="22" letter-spacing="4" fill="#a7e4cb">NANITHAL / NOTES</text>
+<text x="64" y="250" font-family="Noto Sans CJK SC,sans-serif" font-size="68" font-weight="bold" fill="#f4f7f5">Nanithal 的博客</text>
+<text x="68" y="326" font-family="Noto Sans CJK SC,sans-serif" font-size="32" fill="#c3d3cf">记录学习、项目与思考</text>
+<text x="68" y="435" font-family="Noto Sans CJK SC,sans-serif" font-size="24" fill="#a7e4cb">Linux · 编程 · 机器学习 · 嵌入式</text>
+<text x="68" y="591" font-family="DejaVu Sans,sans-serif" font-size="24" fill="#c3d3cf">nanithal.github.io</text>
+<rect x="889" y="198" width="224" height="224" rx="48" fill="#23444b"/>
+<path d="M948 359V261h22l70 67v-67h22v98h-22l-70-67v67Z" fill="#a7e4cb"/>
+</svg>

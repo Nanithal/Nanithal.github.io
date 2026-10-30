@@ -1,3 +1,17 @@
+---
+title: "Markdown 语法总结指南｜博客写作必备"
+date: 2026-10-12T13:14:07+08:00
+lastmod: 2026-10-30
+draft: false
+description: "整理 Markdown 基础语法、GFM 扩展，以及博客写作中的链接、图片和排版方法。"
+categories:
+  - 博客
+tags:
+  - Markdown
+  - 博客写作
+showToc: true
+TocOpen: true
+---
 
 # Markdown 语法总结指南｜博客写作必备
 
@@ -173,29 +187,31 @@ ___
 #### 图片
 
 图片语法= !+链接语法
+
+本博客的文章图片统一放在 `static/images/posts/<文章名>/` 中。正文引用时省略 `static`，使用以 `/images/posts/` 开头的路径；下面的 `photo.png` 是语法示例，实际使用时替换为自己的图片文件名。
 ```
 ![替代文本](图片路径或URL)
 ```
 可选加标题
 ```
-![替代文本](./img/photo.png "图片标题")
+![替代文本](/images/posts/markdown-guide/photo.png "图片标题")
 ```
 
 引用式写法（同链接的引用式写法一致）
 ```
 ![替代文本][img1]
 
-[img1]: ./img/photo.png
+[img1]: /images/posts/markdown-guide/photo.png
 ```
->标准markdown不支持直接控制图片尺寸，可以用<img>标签。
+>标准markdown不支持直接控制图片尺寸，可以用 `<img>` 标签。
 
 #### 图片加链接（点击图片跳转链接）
 ```
-[![替代文本](photo.png)](https://Nanithal.github.io)
+[![替代文本](/images/posts/markdown-guide/photo.png)](https://Nanithal.github.io)
 ```
 
 
-![图片未能加载出来](../img/avatar.jpg)
+![图片示例](/images/posts/markdown-guide/avatar.jpg)
 
 ## GFM扩展语法（博客高频）
 
@@ -252,17 +268,17 @@ ___
 ```html
 <u>下划线文字</u>
 ```
-<u>下划线文字</u>
+{{< rawhtml >}}<u>下划线文字</u>{{< /rawhtml >}}
 
 ### Mermaid流程图
-```
+````markdown
 ```mermaid
 graph LR
 A[开始] --> B{判断}
 B -->|是| C[执行操作]
 B -->|否| D[结束]
 ```
-```
+````
 
 ```mermaid
 graph LR
@@ -277,8 +293,8 @@ markdown中可以插入数学公式且渲染效果优秀
 - 行内公式：用单个美元符号`$`包裹。例如：`E = mc^2`，$E = mc ^2$
 - 块级公式：用双美元`$$`包裹
 ```
-&&
+$$
 \sum_{i=1}^{n} i = \frac{n(n+1)}{2}
-&&
+$$
 ```
 $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$

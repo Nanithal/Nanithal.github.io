@@ -1,0 +1,13 @@
+# Hugo 构建产物与缓存
+/public/
+/resources/
+/.hugo_build.lock
+
+# Obsidian 个人工作区状态，保留可共享的编辑器配置
+**/.obsidian/workspace*.json
+**/.obsidian/cache/
+
+# 编辑器与操作系统临时文件
+*.swp
+*.swo
+.DS_Store

@@ -9,6 +9,10 @@ categories:
 tags:
   - LaTeX
   - 数学
+description: "测试 LaTeX 分式、求和、矩阵与多行公式的渲染效果。"
+robotsNoIndex: true
+sitemap:
+  disable: true
 ---
 
 # LaTeX 数学公式测试

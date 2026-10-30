@@ -6,8 +6,7 @@ draft: false
 description: "我的第一篇博客，记录创建这个技术博客的初衷"
 
 categories:
-    - 博客
-    - 哈哈哈哈
+  - 博客
 tags:
     - Hugo
     - PaperMod

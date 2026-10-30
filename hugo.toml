@@ -1,5 +1,9 @@
-baseURL = 'https://Nanithal.github.io/'
-locale = 'zh-cn'
+baseURL = 'https://nanithal.github.io/'
+defaultContentLanguage = 'zh'
+locale = 'zh-CN'
+hasCJKLanguage = true
+enableRobotsTXT = true
+mainSections = ['posts']
 timeZone = 'Asia/Shanghai'
 title = 'Nanithal 的博客'
 theme = 'PaperMod'
@@ -10,6 +14,10 @@ theme = 'PaperMod'
     title = 'Nanithal 的博客'
     description = '记录学习、项目以及思考'
     author = 'Nanithal'
+    images = ['/images/social-card.png']
+    keywords = ['Nanithal', 'Linux', '编程', '算法', '机器学习', '嵌入式']
+    mainSections = ['posts']
+    DateFormat = '2006年1月2日'
 
     defaultTheme = 'auto'
 
@@ -113,3 +121,23 @@ inline = [['\(', '\)'], ['$', '$']]
 
 [outputs]
     home = ["HTML", "RSS", "JSON"]
+
+# 网站图标与分享卡片。
+[params.assets]
+    favicon = '/favicon.ico'
+    favicon16x16 = '/favicon-16x16.png'
+    favicon32x32 = '/favicon-32x32.png'
+    apple_touch_icon = '/apple-touch-icon.png'
+    safari_pinned_tab = '/safari-pinned-tab.svg'
+    theme_color = '#142b32'
+    msapplication_TileColor = '#142b32'
+
+[params.schema]
+    publisherType = 'Person'
+    sameAs = ['https://github.com/Nanithal']
+
+[services.rss]
+    limit = 20
+
+[sitemap]
+    filename = 'sitemap.xml'
