@@ -44,18 +44,6 @@ git push origin main
 `public/`、`resources/`、Hugo 锁文件和 Obsidian 工作区状态不参与版本管理。
 CI 从空目录生成部署产物，避免历史页面残留。自定义模板放在项目 `layouts/`，不要直接改主题子模块。
 
-## 外观与首页
-
-默认使用深色科技风，导航栏按钮可切换明暗模式并记住读者的选择。
-
-- 全站颜色、导航、文章排版和手机适配：`assets/css/extended/studio.css`。
-- 首页布局：`layouts/home.html`。
-- 首页标题、强调文字、简介、短句和兴趣方向：`hugo.toml` 中的 `[params.homeInfoParams]`。
-- 首页自动展示最近 5 篇正式文章；设置 `robotsNoIndex: true` 的功能测试仍可通过 `/posts/` 访问，但不出现在首页。
-- 装饰由 CSS 绘制，不加载额外字体、图片或动画库；手机窄屏隐藏首页装饰，优先呈现文章。
-
-外观覆盖都在项目目录内，不直接修改 `themes/PaperMod` 子模块。
-
 ## SEO 与分享信息
 
 - 标题、简介、作者、中文语言、canonical、Open Graph、Twitter Card 和结构化数据由配置及 PaperMod 输出。

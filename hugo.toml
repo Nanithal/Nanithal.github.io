@@ -19,7 +19,7 @@ theme = 'PaperMod'
     mainSections = ['posts']
     DateFormat = '2006年1月2日'
 
-    defaultTheme = 'dark'
+    defaultTheme = 'auto'
 
     ShowReadingTime = true
     ShowShareButtons = true
@@ -32,13 +32,27 @@ theme = 'PaperMod'
     ShowToc = true  # 文章页面默认显示目录
     TocOpen = true  # 目录默认展开
 
-    # 首页介绍：可在这里修改标题、简介和兴趣方向。
+    # 首页介绍配置
     [params.homeInfoParams]
-        Title = '在代码与思考之间，'
-        Highlight = '持续生长。'
-        Content = '你好，我是 Nanithal。在这里记录 Linux、编程与项目实践，也收藏学习路上的问题、答案和灵感。'
-        Note = '把学习写成笔记，把想法变成实践。'
-        Topics = ['Linux / Arch', 'C / C++', 'Python', '机器学习', '嵌入式', '算法与竞赛']
+        Title = "Hello, I'm Nanithal"
+        Content = '''
+I have something to share with you.
+
+这里是我的秘密基地。
+
+主要记录：
+
+- Linux / Arch Linux
+- C / C++
+- Python
+- 机器学习
+- 嵌入式系统
+- 算法与竞赛
+- 项目开发与实践
+- 思考
+
+希望将这里变成一个花园。
+'''
 
 # 增加首页社交图标
 [[params.socialIcons]]
