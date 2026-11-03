@@ -1,33 +1,34 @@
-baseURL = 'https://nanithal.github.io/'
-defaultContentLanguage = 'zh'
-locale = 'zh-CN'
-hasCJKLanguage = true
-enableRobotsTXT = true
-mainSections = ['posts']
-timeZone = 'Asia/Shanghai'
-title = 'Nanithal 的技术博客｜学习笔记与项目实践'
-theme = 'PaperMod'
+baseURL = 'https://nanithal.github.io/' # 网站根域名
+defaultContentLanguage = 'zh'   # 网站默认语言为中文
+locale = 'zh-CN'    # 区域设置
+hasCJKLanguage = true   # 开启中日韩文字支持，统计文章字数、阅读时间需要开启
+enableRobotsTXT = true  # 自动生成robots.txt,告诉搜索引擎爬虫哪些页面可以抓取，对 SEO 友好。
+mainSections = ['posts']    # Hugo 的主内容分区，posts 对应 content/posts/ 目录
+timeZone = 'Asia/Shanghai'  # 时间设置在上海
+title = 'Nanithal 的技术博客｜学习笔记与项目实践'   # 网站全局标题
+theme = 'PaperMod'  # 指定使用的主题
 
+# [params]下的配置绝大部分是PaperMod主题读取
 
 [params]
-    env = 'production'
-    title = 'Nanithal 的技术博客｜学习笔记与项目实践'
-    description = 'Nanithal 的个人技术博客，记录 Linux 与 Arch Linux 配置、C/C++ 和 Python 编程、数据结构与算法、机器学习和嵌入式系统的学习笔记，分享项目实践中的问题、解决过程与技术思考。'
+    env = 'production'  # 环境设置为生产环境
+    title = 'Nanithal 的技术博客｜学习笔记与项目实践'   # 主题层面网站标题
+    description = 'Nanithal 的个人技术博客，记录 Linux 与 Arch Linux 配置、C/C++ 和 Python 编程、数据结构与算法、机器学习和嵌入式系统的学习笔记，分享项目实践中的问题、解决过程与技术思考。'    #网站元描述，HTML meta description，搜索引擎搜索结果展示简介；
     author = 'Nanithal'
-    images = ['/images/social-card.png']
+    images = ['/images/social-card.png']    # 社交分享卡片图片，分享到微信、Twitter/Facebook 时展示的预览图；
     keywords = ['Nanithal', 'Linux', '编程', '算法', '机器学习', '嵌入式']
     mainSections = ['posts']
-    DateFormat = '2006年1月2日'
+    DateFormat = '2006年1月2日' # 日期格式化格式
 
-    defaultTheme = 'auto'
+    defaultTheme = 'auto'   # 网站颜色跟随操作系统颜色
 
-    ShowReadingTime = true
-    ShowShareButtons = true
-    ShowPostNavLinks = true
-    ShowCodeCopyButtons = true
-    ShowBreadCrumbs = true
-    ShowWordCount = true
-    ShowRssButtonInSectionTermList = true
+    ShowReadingTime = true  # 显示阅读需要几分钟
+    ShowShareButtons = true # 文章底部社交分享按钮
+    ShowPostNavLinks = true # 文章底部「上一篇 / 下一篇」导航
+    ShowCodeCopyButtons = true  # 代码块右上角复制按钮
+    ShowBreadCrumbs = true  # 页面顶部面包屑导航，例如：首页 > 文章 > xxx
+    ShowWordCount = true    # 显示文章字数统计（中文需要 hasCJKLanguage=true）
+    ShowRssButtonInSectionTermList = true   # 在分类、标签页面显示 RSS 订阅图标
 
     ShowToc = true  # 文章页面默认显示目录
     TocOpen = true  # 目录默认展开
@@ -60,8 +61,10 @@ I have something to share with you.
     url = "https://github.com/Nanithal"
 
 # ========== Hugo + KaTeX配置LaTeX公式 ==========
+# PaperMod 使用 Goldmark Markdown 解析器，passthrough 用来让 Markdown 不转义 LaTeX 符号，配合 KaTeX 渲染数学公式。
+
 [markup.goldmark.extensions.passthrough]
-enable = true
+enable = true   # 开启传递原始字符扩展，不让 markdown 吃掉 $ \[ 这些符号
 
 [markup.goldmark.extensions.passthrough.delimiters]
 block = [['\[', '\]'], ['$$', '$$']]
@@ -70,6 +73,7 @@ inline = [['\(', '\)'], ['$', '$']]
 
 
 # 建立分区的相关操作
+# [[menu.main]] 是 TOML 数组，每一段代表导航栏一个菜单项；weight 数值越小越靠前
 [[menu.main]]
     identifier = "home"
     name = "首页"
@@ -114,13 +118,13 @@ inline = [['\(', '\)'], ['$', '$']]
 
 # 代码高亮显示配置
 [markup.highlight]
-    noClasses = false
-    codeFences = true
-    guessSyntax = false
-    lineNos = false
+    noClasses = false   # 输出CSS class
+    codeFences = true   # 启用 ``` 围栏代码块
+    guessSyntax = false # 不自动猜测代码语言，必须手动写 cpp python 指定语言，避免识别错乱。
+    lineNos = false # 默认关闭代码行号；可以改成 true 默认显示行号，也可以单篇代码块内单独开启行号。
 
 [outputs]
-    home = ["HTML", "RSS", "JSON"]
+    home = ["HTML", "RSS", "JSON"]  # 首页输出产物：普通网页+RSS订阅源+JSON文件
 
 # 网站图标与分享卡片。
 [params.assets]
@@ -132,16 +136,20 @@ inline = [['\(', '\)'], ['$', '$']]
     theme_color = '#142b32'
     msapplication_TileColor = '#142b32'
 
+# 结构化数据，告诉搜索引擎这个网站发布者是「个人 Person」，关联你的 GitHub 账号，提升搜索引擎理解你的个人站点。
 [params.schema]
     publisherType = 'Person'
     sameAs = ['https://github.com/Nanithal']
 
+# RSS 订阅最多输出最新 20 篇文章。
 [services.rss]
     limit = 20
 
+# 生成 sitemap.xml，搜索引擎读取这个文件抓取全部网页链接。
 [sitemap]
     filename = 'sitemap.xml'
 
+# Google 搜索控制台验证
 [params.analytics.google]
     SiteVerificationTag = 'b2cFt-Wr5M6k1N6AhDa9HmsfnbRRHo5tWZz1UJnKW3g'
 
