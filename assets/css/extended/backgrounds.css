@@ -1,0 +1,29 @@
+/* 首页顶部横幅：只装饰首页介绍，不覆盖整页背景。 */
+.home-info {
+    min-height: 0;
+    margin-top: 0;
+}
+
+.home-info::before {
+    content: "";
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 240px;
+    margin-bottom: 28px;
+    border-radius: var(--radius);
+    background-color: #142637;
+    background-image: url("/images/backgrounds/夜幕-山峰-川西.jpg");
+    background-size: cover;
+    /* 调整第二个百分比，可以改变竖直裁剪位置。 */
+    background-position: center 60%;
+    background-repeat: no-repeat;
+}
+
+/* 手机上缩短横幅，为正文保留更多空间。 */
+@media (max-width: 600px) {
+    .home-info::before {
+        height: 160px;
+        margin-bottom: 22px;
+    }
+}
