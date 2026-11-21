@@ -1,0 +1,12 @@
+.site-runtime {
+    margin: 8px auto 24px;
+    padding: 0 24px;
+    color: var(--secondary);
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#site-runtime-days {
+    font-variant-numeric: tabular-nums;
+}

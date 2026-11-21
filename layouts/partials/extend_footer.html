@@ -9,3 +9,15 @@
         await mermaid.run({ nodes: diagrams });
     }
 </script>
+
+{{- if .IsHome }}
+{{- $runtime := site.Params.runtime }}
+{{- $baseline := time.AsTime $runtime.baseline }}
+{{- $elapsed := math.Max 0 (math.Floor (div (now.Sub $baseline).Hours 24)) }}
+<p id="site-runtime" class="site-runtime"
+   data-baseline="{{ $runtime.baseline }}" data-base-days="{{ $runtime.baseDays }}">
+    博客已运行 <span id="site-runtime-days">{{ add (int $runtime.baseDays) (int $elapsed) }}</span> 天
+</p>
+{{- $runtimeScript := resources.Get "js/site-runtime.js" | minify | fingerprint }}
+<script defer src="{{ $runtimeScript.RelPermalink }}" integrity="{{ $runtimeScript.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end }}
